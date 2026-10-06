@@ -119,14 +119,14 @@ function startNewGame() {
 }
 
 function init() {
-  const header = createHeader(startNewGame, showLeadersModal);
-  const stats = createStats();
-  app.append(header, stats);
-
-  const board = createBoard();
-  app.append(board);
-  bindBoardEvents(board);
-  updateUI();
-}
-
-init();
+    const header = createHeader(startNewGame, showLeadersModal);
+    const stats = createStats();
+    app.append(header, stats);
+  
+    const board = createBoard();
+    app.append(board);
+    bindBoardEvents(board);
+    updateUI();
+  }
+  
+  init();  
