@@ -35,7 +35,7 @@
 
   .app {
     width: 100%;
-    max-width: 560px;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -51,8 +51,8 @@
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    width: 100%;
   }
-  
   .header__title {
     margin: 0;
     font-size: 22px;
@@ -117,6 +117,7 @@
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    width: 100%;
   }
   
   .stats p {
@@ -134,11 +135,16 @@
   .board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 12px;
     padding: 16px;
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+  
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1;
   }
 
   .card {
