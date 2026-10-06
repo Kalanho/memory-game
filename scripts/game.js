@@ -17,7 +17,7 @@ export const state = {
   lockBoard: false,
   moves: 0,
   pairs: 0,
-  totalPairs: 8,
+  totalPairs: CARD_IMAGES.length,
   closeTimer: null,
   isGameOver: false,
 };
@@ -37,6 +37,7 @@ export function createBoard() {
 
   deck.forEach((img) => {
     const card = createElement('button', 'card');
+    card.type = 'button';
     card.dataset.imageId = img.id;
     card.setAttribute('aria-label', 'Закрытая карточка');
 
@@ -84,8 +85,8 @@ export function onCardClick(card, updateUI, onWin) {
   } else {
     state.lockBoard = true;
     state.closeTimer = setTimeout(() => {
-      state.firstCard.classList.remove('card--flipped');
-      state.secondCard.classList.remove('card--flipped');
+      if (state.firstCard) state.firstCard.classList.remove('card--flipped');
+      if (state.secondCard) state.secondCard.classList.remove('card--flipped');
       state.firstCard = null;
       state.secondCard = null;
       state.lockBoard = false;

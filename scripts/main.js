@@ -42,10 +42,12 @@ function initTheme() {
   });
 }
 
+
 function updateUI() {
   if (movesEl) movesEl.textContent = String(state.moves);
   if (pairsEl) pairsEl.textContent = `${state.pairs} / ${state.totalPairs}`;
 }
+
 
 function createHeader(onNewGame, onShowLeaders) {
   const header = createElement('header', 'header');
@@ -63,6 +65,7 @@ function createHeader(onNewGame, onShowLeaders) {
 
   actions.append(themeToggle, newGameBtn, leadersBtn);
   header.append(title, actions);
+
   return header;
 }
 
@@ -76,7 +79,7 @@ function createStats() {
   movesBox.append(movesValue, movesLabel);
 
   const pairsBox = createElement('div', 'stats__box');
-  const pairsValue = createElement('span', 'stats__value', '0 / 8');
+  const pairsValue = createElement('span', 'stats__value', `0 / ${state.totalPairs}`);
   const pairsLabel = createElement('span', 'stats__label', 'Пары');
   pairsBox.append(pairsValue, pairsLabel);
 
@@ -87,6 +90,7 @@ function createStats() {
 
   return stats;
 }
+
 
 function bindBoardEvents(board) {
   board.addEventListener('click', (e) => {
@@ -99,6 +103,7 @@ function bindBoardEvents(board) {
 
 function showWinModal(moves) {
   saveResult(moves);
+
   openModal({
     title: 'Победа!',
     content: `Вы нашли все пары за ${moves} ходов.`,
@@ -153,7 +158,6 @@ function showLeadersModal() {
   });
 }
 
-
 function startNewGame() {
   resetState();
   closeModal();
@@ -170,7 +174,6 @@ function startNewGame() {
   bindBoardEvents(newBoard);
   updateUI();
 }
-
 
 function init() {
   const header = createHeader(startNewGame, showLeadersModal);

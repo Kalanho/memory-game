@@ -12,7 +12,8 @@ export function saveResult(moves) {
 
 export function getResults() {
   try {
-    return JSON.parse(localStorage.getItem(KEY)) || [];
+    const raw = JSON.parse(localStorage.getItem(KEY));
+    return Array.isArray(raw) ? raw : [];
   } catch {
     return [];
   }

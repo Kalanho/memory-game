@@ -12,9 +12,10 @@ export function openModal({ title, content, actions = [] }) {
 
   const titleEl = createElement('h2', 'modal__title', title);
   const body = createElement('div', 'modal__body');
+
   if (typeof content === 'string') {
     body.textContent = content;
-  } else {
+  } else if (content) {
     body.append(content);
   }
 
@@ -46,7 +47,7 @@ export function closeModal() {
   if (!activeModal) return;
   const { overlay, onKey } = activeModal;
   document.removeEventListener('keydown', onKey);
-  overlay.remove();
+  if (overlay && overlay.parentNode) overlay.remove();
   document.body.classList.remove('no-scroll');
   activeModal = null;
 }
