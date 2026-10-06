@@ -8,15 +8,52 @@ document.body.append(app);
 
 let movesEl = null;
 let pairsEl = null;
+let themeToggle = null;
+
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (themeToggle) {
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    themeToggle.setAttribute(
+      'aria-label',
+      theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'
+    );
+  }
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('memory-theme');
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+  applyTheme(initialTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem('memory-theme', next);
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('memory-theme')) {
+      applyTheme(e.matches ? 'dark' : 'light');
+    }
+  });
+}
 
 function updateUI() {
-  if (movesEl) movesEl.textContent = `Ходы: ${state.moves}`;
-  if (pairsEl) pairsEl.textContent = `Пары: ${state.pairs} / ${state.totalPairs}`;
+  if (movesEl) movesEl.textContent = String(state.moves);
+  if (pairsEl) pairsEl.textContent = `${state.pairs} / ${state.totalPairs}`;
 }
 
 function createHeader(onNewGame, onShowLeaders) {
   const header = createElement('header', 'header');
   const title = createElement('h1', 'header__title', 'Memory Game');
+
+  const actions = createElement('div', 'header__actions');
+
+  themeToggle = createButton('🌙', 'btn btn--theme', 'Переключить тему');
 
   const newGameBtn = createButton('Новая игра', 'btn btn--new', 'Начать новую игру');
   newGameBtn.addEventListener('click', onNewGame);
@@ -24,15 +61,30 @@ function createHeader(onNewGame, onShowLeaders) {
   const leadersBtn = createButton('Таблица лидеров', 'btn btn--leaders', 'Открыть таблицу лидеров');
   leadersBtn.addEventListener('click', onShowLeaders);
 
-  header.append(title, newGameBtn, leadersBtn);
+  actions.append(themeToggle, newGameBtn, leadersBtn);
+  header.append(title, actions);
   return header;
 }
 
+
 function createStats() {
   const stats = createElement('div', 'stats');
-  movesEl = createElement('p', 'stats__moves', 'Ходы: 0');
-  pairsEl = createElement('p', 'stats__pairs', 'Пары: 0 / 8');
-  stats.append(movesEl, pairsEl);
+
+  const movesBox = createElement('div', 'stats__box');
+  const movesValue = createElement('span', 'stats__value', '0');
+  const movesLabel = createElement('span', 'stats__label', 'Ходы');
+  movesBox.append(movesValue, movesLabel);
+
+  const pairsBox = createElement('div', 'stats__box');
+  const pairsValue = createElement('span', 'stats__value', '0 / 8');
+  const pairsLabel = createElement('span', 'stats__label', 'Пары');
+  pairsBox.append(pairsValue, pairsLabel);
+
+  stats.append(movesBox, pairsBox);
+
+  movesEl = movesValue;
+  pairsEl = pairsValue;
+
   return stats;
 }
 
@@ -44,9 +96,9 @@ function bindBoardEvents(board) {
   });
 }
 
+
 function showWinModal(moves) {
   saveResult(moves);
-
   openModal({
     title: 'Победа!',
     content: `Вы нашли все пары за ${moves} ходов.`,
@@ -101,6 +153,7 @@ function showLeadersModal() {
   });
 }
 
+
 function startNewGame() {
   resetState();
   closeModal();
@@ -118,49 +171,18 @@ function startNewGame() {
   updateUI();
 }
 
+
 function init() {
-    const header = createHeader(startNewGame, showLeadersModal);
-    const stats = createStats();
-    app.append(header, stats);
-  
-    const board = createBoard();
-    app.append(board);
-    bindBoardEvents(board);
-    updateUI();
-  }
-  
-  init();  
-  (function initTheme() {
-    const themeToggle = document.getElementById('themeToggle');
-    const html = document.documentElement;
-  
-    // 1. Загружаем сохранённую тему или системную
-    const savedTheme = localStorage.getItem('memory-theme');
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-  
-    applyTheme(initialTheme);
-  
+  const header = createHeader(startNewGame, showLeadersModal);
+  const stats = createStats();
+  app.append(header, stats);
 
-    themeToggle.addEventListener('click', () => {
-      const current = html.getAttribute('data-theme') || 'light';
-      const next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      localStorage.setItem('memory-theme', next);
-    });
-  
+  const board = createBoard();
+  app.append(board);
+  bindBoardEvents(board);
 
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem('memory-theme')) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  
-    function applyTheme(theme) {
-      html.setAttribute('data-theme', theme);
-      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-      themeToggle.setAttribute('aria-label',
-        theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'
-      );
-    }
-  })();
+  initTheme();
+  updateUI();
+}
+
+init();
