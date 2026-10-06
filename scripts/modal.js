@@ -29,16 +29,25 @@ export function openModal({ title, content, actions = [] }) {
   modal.append(titleEl, body, footer);
   overlay.append(modal);
   document.body.append(overlay);
-  document.body.classList.add('no-scroll');
 
+ 
+  document.body.classList.add('no-scroll');
+  document.documentElement.classList.add('no-scroll');
+
+  
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) closeModal();
   });
 
+ 
   const onKey = (e) => {
     if (e.key === 'Escape') closeModal();
   };
   document.addEventListener('keydown', onKey);
+
+ 
+  const firstBtn = footer.querySelector('.btn');
+  if (firstBtn) firstBtn.focus();
 
   activeModal = { overlay, onKey };
 }
@@ -49,5 +58,6 @@ export function closeModal() {
   document.removeEventListener('keydown', onKey);
   if (overlay && overlay.parentNode) overlay.remove();
   document.body.classList.remove('no-scroll');
+  document.documentElement.classList.remove('no-scroll');
   activeModal = null;
 }
