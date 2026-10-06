@@ -1,37 +1,43 @@
+import { createElement } from './utils.js';
 
 export const CARD_IMAGES = [
-    { id: 'apple', emoji: '🍎' },
-    { id: 'banana', emoji: '🍌' },
-    { id: 'cherry', emoji: '🍒' },
-    { id: 'grape', emoji: '🍇' },
-    { id: 'lemon', emoji: '🍋' },
-    { id: 'melon', emoji: '🍉' },
-    { id: 'peach', emoji: '🍑' },
-    { id: 'pear', emoji: '🍐' },
-  ];
-  export const state = {
-    cards: [],          
-    firstCard: null,    
-    secondCard: null,  
-    lockBoard: false,   
-    moves: 0,          
-    pairs: 0,           
-    totalPairs: 8,
-    closeTimer: null,   
-    isGameOver: false,
-  };
-  // game.js
-import { createElement } from './utils.js';
-import { CARD_IMAGES, shuffle } from './game.js';
+  { id: 'apple', emoji: '🍎' },
+  { id: 'banana', emoji: '🍌' },
+  { id: 'cherry', emoji: '🍒' },
+  { id: 'grape', emoji: '🍇' },
+  { id: 'lemon', emoji: '🍋' },
+  { id: 'melon', emoji: '🍉' },
+  { id: 'peach', emoji: '🍑' },
+  { id: 'pear', emoji: '🍐' },
+];
+
+export const state = {
+  firstCard: null,
+  secondCard: null,
+  lockBoard: false,
+  moves: 0,
+  pairs: 0,
+  totalPairs: 8,
+  closeTimer: null,
+  isGameOver: false,
+};
+
+export function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
 export function createBoard() {
   const board = createElement('div', 'board');
-  const deck = shuffle([...CARD_IMAGES, ...CARD_IMAGES]); // 16 карточек
+  const deck = shuffle([...CARD_IMAGES, ...CARD_IMAGES]);
 
-  deck.forEach((img, index) => {
+  deck.forEach((img) => {
     const card = createElement('button', 'card');
     card.dataset.imageId = img.id;
-    card.dataset.index = index;
     card.setAttribute('aria-label', 'Закрытая карточка');
 
     const inner = createElement('div', 'card__inner');
@@ -44,4 +50,59 @@ export function createBoard() {
   });
 
   return board;
+}
+
+export function onCardClick(card, updateUI, onWin) {
+  if (state.lockBoard) return;
+  if (state.isGameOver) return;
+  if (card.classList.contains('card--flipped')) return;
+  if (card.classList.contains('card--matched')) return;
+
+  card.classList.add('card--flipped');
+
+  if (!state.firstCard) {
+    state.firstCard = card;
+    return;
+  }
+
+  state.secondCard = card;
+  state.moves++;
+  updateUI();
+
+  if (state.firstCard.dataset.imageId === card.dataset.imageId) {
+    state.firstCard.classList.add('card--matched');
+    card.classList.add('card--matched');
+    state.pairs++;
+    state.firstCard = null;
+    state.secondCard = null;
+    updateUI();
+
+    if (state.pairs === state.totalPairs) {
+      state.isGameOver = true;
+      onWin(state.moves);
+    }
+  } else {
+    state.lockBoard = true;
+    state.closeTimer = setTimeout(() => {
+      state.firstCard.classList.remove('card--flipped');
+      state.secondCard.classList.remove('card--flipped');
+      state.firstCard = null;
+      state.secondCard = null;
+      state.lockBoard = false;
+      state.closeTimer = null;
+    }, 1000);
+  }
+}
+
+export function resetState() {
+  if (state.closeTimer) {
+    clearTimeout(state.closeTimer);
+    state.closeTimer = null;
+  }
+  state.firstCard = null;
+  state.secondCard = null;
+  state.lockBoard = false;
+  state.moves = 0;
+  state.pairs = 0;
+  state.isGameOver = false;
 }
