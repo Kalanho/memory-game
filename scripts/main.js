@@ -130,3 +130,37 @@ function init() {
   }
   
   init();  
+  (function initTheme() {
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+  
+    // 1. Загружаем сохранённую тему или системную
+    const savedTheme = localStorage.getItem('memory-theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+  
+    applyTheme(initialTheme);
+  
+
+    themeToggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme') || 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('memory-theme', next);
+    });
+  
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('memory-theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+      themeToggle.setAttribute('aria-label',
+        theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'
+      );
+    }
+  })();

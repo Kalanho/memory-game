@@ -1,3 +1,47 @@
+.btn--theme {
+    padding: 10px 14px;
+    font-size: 16px;
+    background: var(--surface-2);
+    color: var(--text);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--accent);
+  }
+  
+  .btn--theme:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+:root {
+    
+    --bg: #f5f3ff;
+    --text: #1e1b4b;
+    --text-muted: #6b7280;
+    --surface-2: #ffffff;
+    --card-back: #ede9fe;
+    --accent: #8b5cf6;
+    --accent-hover: #a78bfa;
+    --success: #22c55e;
+  }
+  
+  [data-theme="dark"] {
+    --bg: #0f0a1f;
+    --text: #f5f3ff;
+    --text-muted: #9ca3af;
+    --surface-2: #1e1b2e;
+    --card-back: #2d2640;
+    --accent: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --success: #4ade80;
+  }
+  
+  
+  body,
+  .stats__box,
+  .card__front,
+  .card__back,
+  .btn {
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
 body {
     margin: 0;
     min-height: 100vh;
